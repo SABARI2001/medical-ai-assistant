@@ -1,4 +1,4 @@
-# Core Streamlit and Web Framework
+# Core
 streamlit
 streamlit-chat
 
@@ -10,69 +10,18 @@ google-generativeai
 # Embeddings and Vector Search
 sentence-transformers
 faiss-cpu
-numpy
 torch
+numpy
+scikit-learn
 
 # Document Processing
 PyPDF2
 docx2txt
 python-docx
-markdown
-
-# Web Search and HTTP
-requests
-urllib3
-httpx
-
-# Data Processing
-pandas
-
-# Text Processing
-regex
-nltk
-
-# Database
-psycopg2-binary
-SQLAlchemy
 
 # Utilities
+pandas
+requests
 python-dotenv
 pydantic
 joblib
-
-# Logging and Error Handling
-loguru
-
-# Additional Dependencies for Medical AI Assistant
-scikit-learn
-transformers
-tokenizers
-
-torch>=2.0.0
-transformers>=4.30.0
-
-# Streamlit Cloud specific
-streamlit-option-menu
-streamlit-extras
-
-# Security and Environment
-cryptography
-
-# File handling
-python-magic
-python-magic-bin
-
-# Date and time utilities
-python-dateutil
-
-# JSON handling
-jsonschema
-
-# HTTP client improvements
-aiohttp
-
-# Memory optimization
-psutil
-
-# Deployment
-gunicorn
