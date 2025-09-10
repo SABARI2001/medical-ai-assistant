@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Import custom modules
-from config import Config
+from config.config import Config
 from models.llm import LLMManager
 from models.embeddings import EmbeddingManager
 from models.database import DatabaseManager
