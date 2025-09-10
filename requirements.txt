@@ -1,115 +1,78 @@
-pip == 25.2
 # Core Streamlit and Web Framework
-streamlit>=1.28.0
-streamlit-chat>=0.1.1
+streamlit
+streamlit-chat
 
 # LLM Providers
-openai>=1.3.0
-groq>=0.4.1
-google-generativeai>=0.3.0
+openai
+groq
+google-generativeai
 
 # Embeddings and Vector Search
-sentence-transformers>=2.2.0
-faiss-cpu>=1.7.4
-numpy>=1.24.0
-torch>=2.0.0
+sentence-transformers
+faiss-cpu
+numpy
+torch
 
 # Document Processing
-PyPDF2>=3.0.1
-python-docx2txt>=0.8
-python-docx>=0.8.11
-markdown>=3.5.0
+PyPDF2
+docx2txt
+python-docx
+markdown
 
 # Web Search and HTTP
-requests>=2.31.0
-urllib3>=2.0.0
-httpx>=0.24.0
+requests
+urllib3
+httpx
 
 # Data Processing
-pandas>=2.0.0
-numpy>=1.24.0
+pandas
 
 # Text Processing
-regex>=2023.8.8
-nltk>=3.8.1
+regex
+nltk
 
 # Database
-psycopg2-binary>=2.9.9
-SQLAlchemy>=2.0.0
+psycopg2-binary
+SQLAlchemy
 
 # Utilities
-python-dotenv>=1.0.0
-pydantic>=2.4.0
-
-# Caching and Storage
-joblib>=1.3.0
+python-dotenv
+pydantic
+joblib
 
 # Logging and Error Handling
-loguru>=0.7.0
+loguru
 
 # Additional Dependencies for Medical AI Assistant
-scikit-learn>=1.3.0
+scikit-learn
+transformers
+tokenizers
+
+torch>=2.0.0
 transformers>=4.30.0
-tokenizers>=0.13.0
 
 # Streamlit Cloud specific
-streamlit-option-menu>=0.3.6
-streamlit-extras>=0.3.0
+streamlit-option-menu
+streamlit-extras
 
 # Security and Environment
-cryptography>=41.0.0
+cryptography
 
 # File handling
-python-magic>=0.4.27
-python-magic-bin>=0.4.14
+python-magic
+python-magic-bin
 
 # Date and time utilities
-python-dateutil>=2.8.2
+python-dateutil
 
 # JSON handling
-jsonschema>=4.17.0
+jsonschema
 
 # HTTP client improvements
-aiohttp>=3.8.0
+aiohttp
 
 # Memory optimization
-psutil>=5.9.0
+psutil
 
 # Deployment
-gunicorn>=21.2.0
-
-# Minimal requirements for Medical AI Assistant
-# Use this if the full requirements.txt causes deployment issues
-
-# Core
-streamlit>=1.28.0
-streamlit-chat>=0.1.1
-
-# LLM Providers (choose one or more)
-openai>=1.3.0
-groq>=0.4.1
-google-generativeai>=0.3.0
-
-# Essential dependencies
-numpy>=1.24.0
-pandas>=2.0.0
-requests>=2.31.0
-python-dotenv>=1.0.0
-
-# Document processing
-PyPDF2>=3.0.1
-python-docx2txt>=0.8
-
-# Database (optional)
-SQLAlchemy>=2.0.0
-
-# Text processing
-regex>=2023.8.8
-
-# Vector search (if using RAG)
-sentence-transformers>=2.2.0
-faiss-cpu>=1.7.4
-
-# Utilities
-pydantic>=2.4.0
-joblib>=1.3.0
+gunicorn
