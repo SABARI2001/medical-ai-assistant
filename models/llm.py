@@ -1,6 +1,5 @@
 import openai
 import google.generativeai as genai
-from google.generativeai.types import SomeType
 from groq import Groq
 import streamlit as st
 from typing import List, Dict, Any, Optional
