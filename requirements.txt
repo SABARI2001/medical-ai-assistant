@@ -1,31 +1,3 @@
-config
-# Core
-streamlit
-streamlit-chat
-
-# LLM Providers
-openai
-groq
-google-generativeai
-
-# Embeddings and Vector Search
-sentence-transformers
-faiss-cpu
-torch
-numpy
-scikit-learn
-
-# Document Processing
-PyPDF2
-docx2txt
-python-docx
-
-# Utilities
-pandas
-requests
-python-dotenv
-pydantic
-joblib
 # Core Streamlit and Web Framework
 streamlit
 streamlit-chat
