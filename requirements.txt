@@ -15,7 +15,7 @@ torch
 
 # Document Processing
 PyPDF2
-python-docx2txt
+docx2txt
 python-docx
 markdown
 
@@ -58,9 +58,7 @@ streamlit-extras
 # Security and Environment
 cryptography
 
-# File handling
 python-magic
-python-magic-bin
 
 # Date and time utilities
 python-dateutil
