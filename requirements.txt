@@ -1,3 +1,4 @@
+config
 # Core
 streamlit
 streamlit-chat
