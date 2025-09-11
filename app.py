@@ -122,26 +122,11 @@ st.markdown("""
     .sidebar .sidebar-content {
         background: #ffffff;
         border-right: 1px solid #e8ecf0;
-        box-shadow: 2px 0 8px rgba(0,0,0,0.04);
-        color: rgb(30,60,155);
+        box-shadow: 2px 0 8px rgba(30,60,155,0.1);
     }
     
     .sidebar .sidebar-content .block-container {
         padding: 1.5rem 1rem;
-        color: rgb(30,60,155);
-    }
-    
-    /* Sidebar text elements */
-    .sidebar h1, .sidebar h2, .sidebar h3, .sidebar h4, .sidebar h5, .sidebar h6 {
-        color: rgb(30,60,155);
-    }
-    
-    .sidebar p, .sidebar div, .sidebar span {
-        color: rgb(30,60,155);
-    }
-    
-    .sidebar .stSelectbox label, .sidebar .stTextInput label, .sidebar .stTextArea label {
-        color: rgb(30,60,155);
     }
     
     /* Medical Grade Cards */
@@ -210,7 +195,7 @@ st.markdown("""
     /* Professional Buttons */
     .stButton > button {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
+        color: blue;
         border: none;
         border-radius: 8px;
         padding: 0.75rem 2rem;
@@ -283,30 +268,11 @@ st.markdown("""
         border: 2px solid #e2e8f0;
         border-radius: 8px;
         transition: all 0.3s ease;
-        color: rgb(30,60,155);
     }
     
     .stSelectbox > div > div:focus-within {
         border-color: #1e3c72;
         box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
-    }
-    
-    /* Table selection and data elements */
-    .stDataFrame, .stTable {
-        color: rgb(30,60,155);
-    }
-    
-    .stDataFrame table, .stTable table {
-        color: rgb(30,60,155);
-    }
-    
-    .stDataFrame th, .stDataFrame td, .stTable th, .stTable td {
-        color: rgb(30,60,155);
-    }
-    
-    /* Selectbox and dropdown text */
-    .stSelectbox label, .stSelectbox .css-1wa3eu0, .stSelectbox .css-1pahdxg {
-        color: rgb(30,60,155);
     }
     
     .stTextInput > div > div > input {
@@ -640,10 +606,7 @@ class ImprovedChatbotApp:
             available_models = []
             if self.config.is_configured('Groq'):
                 available_models.append("Groq (Compound)")
-            if self.config.is_configured('Google'):
-                available_models.append("Gemini 2.5 Flash")
-            if self.config.is_configured('OpenAI'):
-                available_models.append("OpenAI GPT-4")
+
             
             if available_models:
                 selected_model = st.selectbox(
@@ -654,8 +617,7 @@ class ImprovedChatbotApp:
                 # Map display names to internal names
                 model_mapping = {
                     "Groq (Compound)": ("Groq", "groq/compound"),
-                    "Gemini 2.5 Flash": ("Google Gemini", "gemini-2.5-flash"),
-                    "OpenAI GPT-4": ("OpenAI", "gpt-4")
+
                 }
                 st.session_state.selected_provider, st.session_state.selected_model = model_mapping[selected_model]
             else:
@@ -720,11 +682,11 @@ class ImprovedChatbotApp:
     
     def process_documents(self, uploaded_files):
         """Process uploaded documents with size limits and error handling"""
-                with st.spinner("Processing documents..."):
-                    try:
-                        processed_count = 0
-                        medical_count = 0
-                        
+        with st.spinner("Processing documents..."):
+            try:
+                processed_count = 0
+                medical_count = 0
+                
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
@@ -740,15 +702,15 @@ class ImprovedChatbotApp:
                         if file.size > max_file_size:
                             st.error(f"File {file.name} is too large ({file.size} bytes). Maximum allowed: {max_file_size} bytes")
                             continue
-                                
-                                # Read file content
-                                from models.embeddings import process_uploaded_file, chunk_text
+                        
+                        # Read file content
+                        from models.embeddings import process_uploaded_file, chunk_text
                         
                         # Debug: Show file info
                         st.info(f"Processing file: {file.name} (Size: {file.size} bytes)")
                         
-                                content, filename = process_uploaded_file(file)
-                                
+                        content, filename = process_uploaded_file(file)
+                        
                         # Check content length
                         if len(content) > max_content_length:
                             st.warning(f"Content too large ({len(content)} chars), truncating to {max_content_length} chars")
@@ -759,10 +721,10 @@ class ImprovedChatbotApp:
                         if len(content) > 0:
                             st.text_area(f"First 500 characters of {filename}:", content[:500], height=100)
                         
-                                if not content.strip():
+                        if not content.strip():
                             st.warning(f"No content extracted from {filename}")
-                                    continue
-                                
+                            continue
+                        
                         # Chunk the content with smaller chunks
                         chunk_size = self.config.RAG_CONFIG.get('chunk_size', 500)
                         chunk_overlap = self.config.RAG_CONFIG.get('chunk_overlap', 100)
@@ -770,28 +732,28 @@ class ImprovedChatbotApp:
                         
                         # Store document in database (if available)
                         if st.session_state.get('db_available', False):
-                                document_id = self.db.store_document(filename, content, chunks)
-                                processed_count += 1
+                            document_id = self.db.store_document(filename, content, chunks)
+                            processed_count += 1
                         else:
                             document_id = None
                             processed_count += 1
                             st.info("Document processed (not stored - database unavailable)")
-                                
-                                # Try to extract medical data
-                                try:
+                        
+                        # Try to extract medical data
+                        try:
                             status_text.text(f"Analyzing {filename} for medical data...")
-                                    extracted_data = self.medical_extractor.extract_from_text(content)
-                                    
-                                    if extracted_data and extracted_data.get('patient', {}).get('name'):
+                            extracted_data = self.medical_extractor.extract_from_text(content)
+                            
+                            if extracted_data and extracted_data.get('patient', {}).get('name'):
                                 # Store medical data (if database available)
                                 if st.session_state.get('db_available', False) and document_id:
-                                        self.db.store_medical_report(document_id, extracted_data)
-                                        medical_count += 1
+                                    self.db.store_medical_report(document_id, extracted_data)
+                                    medical_count += 1
                                 else:
                                     medical_count += 1
                                     st.info("Medical data extracted (not stored - database unavailable)")
-                                        
-                                        patient_name = extracted_data['patient']['name']
+                                
+                                patient_name = extracted_data['patient']['name']
                                 
                                 # Show success with enhanced styling
                                 st.markdown(f"""
@@ -802,37 +764,37 @@ class ImprovedChatbotApp:
                                     <p><strong>Sex:</strong> {extracted_data['patient'].get('sex', 'N/A')}</p>
                                 </div>
                                 """, unsafe_allow_html=True)
-                                        
-                                        # Show test counts
-                                        test_counts = {}
-                                        for category in ['biochemistry', 'liverFunction', 'lipidProfile', 'thyroidProfile', 'immunoassay', 'other']:
-                                            count = len(extracted_data.get(category, []))
-                                            if count > 0:
-                                                test_counts[category] = count
-                                        
-                                        if test_counts:
+                                
+                                # Show test counts
+                                test_counts = {}
+                                for category in ['biochemistry', 'liverFunction', 'lipidProfile', 'thyroidProfile', 'immunoassay', 'other']:
+                                    count = len(extracted_data.get(category, []))
+                                    if count > 0:
+                                        test_counts[category] = count
+                                
+                                if test_counts:
                                     st.markdown("**Extracted Test Categories:**")
                                     cols = st.columns(len(test_counts))
                                     for i, (category, count) in enumerate(test_counts.items()):
                                         with cols[i]:
                                             st.metric(category.replace('Function', ' Func'), count)
-                                    else:
+                            else:
                                 st.markdown(f"""
                                 <div class="warning-card">
                                     <h4>No Medical Data Found</h4>
                                     <p>Could not extract structured medical data from {filename}</p>
                                 </div>
                                 """, unsafe_allow_html=True)
-                                        
-                                except Exception as e:
+                                
+                        except Exception as e:
                             st.markdown(f"""
                             <div class="error-card">
                                 <h4>Extraction Error</h4>
                                 <p>Error extracting medical data from {filename}: {str(e)}</p>
                             </div>
                             """, unsafe_allow_html=True)
-                                    
-                            except Exception as e:
+                            
+                    except Exception as e:
                         st.markdown(f"""
                         <div class="error-card">
                             <h4>Processing Error</h4>
@@ -849,8 +811,8 @@ class ImprovedChatbotApp:
                         progress_bar.progress(progress_value)
                     else:
                         progress_bar.progress(1.0)
-                        
-                        st.session_state.documents_loaded = True
+                
+                st.session_state.documents_loaded = True
                 
                 # Final success message
                 st.markdown(f"""
@@ -861,7 +823,7 @@ class ImprovedChatbotApp:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                    except Exception as e:
+            except Exception as e:
                 st.markdown(f"""
                 <div class="error-card">
                     <h4>Processing Failed</h4>
@@ -1123,7 +1085,7 @@ Please provide an intelligent, interactive response:"""
             # Store user message in database (if available)
             if st.session_state.get('db_available', False) and self.db:
                 try:
-            self.db.store_chat_message("user", prompt, st.session_state.conversation_id)
+                    self.db.store_chat_message("user", prompt, st.session_state.conversation_id)
                 except Exception as e:
                     logger.warning(f"Failed to store user message: {str(e)}")
             
@@ -1146,12 +1108,12 @@ Please provide an intelligent, interactive response:"""
                     # Store assistant response (if database available)
                     if st.session_state.get('db_available', False) and self.db:
                         try:
-                    self.db.store_chat_message(
-                        "assistant",
-                        response_data["content"],
-                        st.session_state.conversation_id,
-                        response_data.get("sources", [])
-                    )
+                            self.db.store_chat_message(
+                                "assistant",
+                                response_data["content"],
+                                st.session_state.conversation_id,
+                                response_data.get("sources", [])
+                            )
                         except Exception as e:
                             logger.warning(f"Failed to store assistant message: {str(e)}")
             
@@ -1172,7 +1134,7 @@ Please provide an intelligent, interactive response:"""
             tab1, tab2 = st.tabs(["Document Upload", "Chat Interface"])
             
             with tab1:
-            self.render_document_upload()
+                self.render_document_upload()
             
             with tab2:
                 self.render_chat_messages()
