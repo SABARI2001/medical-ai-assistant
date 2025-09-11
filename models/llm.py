@@ -1,5 +1,6 @@
 import openai
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from groq import Groq
 import streamlit as st
 from typing import List, Dict, Any, Optional
@@ -7,14 +8,6 @@ import logging
 from abc import ABC, abstractmethod
 import time
 import random
-
-# Import utility modules
-from utils.api_utilities import (
-    APIResponseHandler, LLMResponseProcessor, RateLimitHandler, 
-    APIKeyValidator, ResponseFormatter
-)
-from utils.error_handler import ErrorHandler, retry_on_failure, handle_errors
-from utils.validation_utilities import ResponseValidator, InputValidator
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -110,51 +103,23 @@ FORMATTING REQUIREMENTS:
 Remember: You are analyzing REAL medical data. Be thorough, accurate, and clinically relevant in your analysis."""
 
 class GroqLLM(BaseLLM):
-    """Groq LLM implementation with enhanced error handling and utilities"""
+    """Groq LLM implementation"""
     
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.rate_limiter = RateLimitHandler()
-        self.response_processor = LLMResponseProcessor()
-        self.formatter = ResponseFormatter()
-        
-        if api_key:
-            # Validate API key
-            is_valid, validation_msg = APIKeyValidator.validate_groq_key(api_key)
-            if not is_valid:
-                logger.error(f"Invalid Groq API key: {validation_msg}")
-                self.client = None
-                return
-            
-            try:
-                self.client = Groq(
-                    api_key=api_key,
-                    default_headers={
-                        "Groq-Model-Version": "latest"
-                    }
-                )
-                logger.info("Groq client initialized successfully")
-            except Exception as e:
-                error_id = ErrorHandler.log_error(e, "groq_client_init")
-                logger.error(f"Failed to initialize Groq client (Error ID: {error_id}): {e}")
-                self.client = None
-        else:
-            self.client = None
+        self.client = Groq(
+            api_key=api_key,
+            default_headers={
+                "Groq-Model-Version": "latest"
+            }
+        ) if api_key else None
     
     def is_configured(self) -> bool:
         return bool(self.api_key and self.client)
     
-    @handle_errors(context="groq_response_generation", default_return="I apologize, but I'm experiencing technical difficulties. Please try again.")
     def generate_response(self, prompt: str, context: List[str], model: str = "groq/compound",
                          response_mode: str = "Detailed", **kwargs) -> str:
         """Generate response with retry logic and comprehensive error handling"""
-        # Validate inputs
-        if not prompt or not isinstance(prompt, str):
-            raise ValueError("Invalid prompt provided")
-        
-        if not self.is_configured():
-            raise ValueError("Groq client not properly configured")
-        
         max_retries = 3
         base_delay = 1.0
         

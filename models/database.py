@@ -208,28 +208,8 @@ class MedicalReportWide(Base):
 class DatabaseManager:
     """Manager class for database operations"""
     
-    def __init__(self, host=None, port=None, dbname=None, user=None, password=None):
-        # Get database configuration from environment variables (Streamlit Cloud compatible)
-        import os
-        import streamlit as st
-        
-        # Try to get DATABASE_URL from Streamlit secrets first (for Streamlit Cloud)
-        if hasattr(st, 'secrets') and 'database' in st.secrets:
-            self.connection_string = st.secrets['database']['url']
-        else:
-            # Fallback to environment variables
-            database_url = os.getenv('DATABASE_URL')
-            if database_url:
-                self.connection_string = database_url
-            else:
-                # Use provided parameters or defaults for local development
-                host = host or os.getenv('DB_HOST', '127.0.0.1')
-                port = port or int(os.getenv('DB_PORT', '5432'))
-                dbname = dbname or os.getenv('DB_NAME', 'postgres')
-                user = user or os.getenv('DB_USER', 'postgres')
-                password = password or os.getenv('DB_PASSWORD', '1234')
-                self.connection_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
-        
+    def __init__(self, host='127.0.0.1', port=5432, dbname='postgres', user='postgres', password='1234'):
+        self.connection_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
         self.engine = None
         self.Session = None
         self.setup_database()
@@ -245,13 +225,7 @@ class DatabaseManager:
             logger.info("Database setup completed successfully")
         except Exception as e:
             logger.error(f"Error setting up database: {str(e)}")
-            # Fallback to SQLite for development/testing
-            logger.info("Falling back to SQLite database")
-            self.connection_string = "sqlite:///medical_assistant.db"
-            self.engine = create_engine(self.connection_string)
-            Base.metadata.create_all(self.engine)
-            self.Session = sessionmaker(bind=self.engine)
-            logger.info("SQLite fallback database setup completed")
+            raise
     
     def store_document(self, filename: str, content: str, chunks: list = None):
         """Store a document and its chunks"""
