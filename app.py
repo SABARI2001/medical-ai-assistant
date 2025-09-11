@@ -67,7 +67,7 @@ st.markdown("""
         max-width: 1200px;
         padding: 1rem 1.5rem;
         margin: 0 auto;
-        background: #fafbfc;
+        background: #0c0c0d;
         min-height: 100vh;
         overflow-y: visible !important;
         height: auto !important;
