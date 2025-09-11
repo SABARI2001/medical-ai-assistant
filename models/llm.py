@@ -1,6 +1,4 @@
 import openai
-from google import genai
-from google.genai import types
 from groq import Groq
 import streamlit as st
 from typing import List, Dict, Any, Optional
@@ -460,83 +458,11 @@ Remember: You are analyzing REAL medical data. Be thorough, accurate, and clinic
 {context_str}
 
 Please note: I'm currently experiencing high demand on my primary analysis service. The above data is from your medical records, but for a more detailed analysis, please try again in a few moments."""
-                
+        
         except Exception as e:
             logger.error(f"Fallback response generation failed: {str(e)}")
             return "I'm currently experiencing high demand. Please try again in a few moments."
 
-class GoogleGeminiLLM(BaseLLM):
-    """Google Gemini LLM implementation using new Google GenAI library"""
-    
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-        self.client = genai.Client(api_key=api_key) if api_key else None
-    
-    def is_configured(self) -> bool:
-        return bool(self.api_key and self.client)
-    
-    def generate_response(self, prompt: str, context: List[str], model: str = "gemini-2.5-flash",
-                         response_mode: str = "Detailed", **kwargs) -> str:
-        if not self.is_configured():
-            return "Google Gemini is not configured. Please provide an API key."
-        
-        try:
-            # Create enhanced prompt with context
-            enhanced_prompt = self._create_enhanced_prompt(prompt, context, response_mode)
-            
-            # Prepare contents for the new API
-            contents = [
-                types.Content(
-                    role="user",
-                    parts=[
-                        types.Part.from_text(text=enhanced_prompt),
-                    ],
-                ),
-            ]
-            
-            # Generate response using the new API
-            response = self.client.models.generate_content(
-                model=model,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_modalities=["TEXT"],
-                    max_output_tokens=kwargs.get('max_tokens', 4000),
-                    temperature=kwargs.get('temperature', 0.7),
-                )
-            )
-            
-            # Extract text from response
-            if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
-                return response.candidates[0].content.parts[0].text
-            else:
-                return "No response generated from Gemini."
-        
-        except Exception as e:
-            logger.error(f"Google Gemini API error: {str(e)}")
-            return f"I'm currently experiencing issues with Google Gemini. Please try again later. Error: {str(e)}"
-    
-    def _create_enhanced_prompt(self, prompt: str, context: List[str], response_mode: str) -> str:
-        context_str = "\n".join(context) if context else "No additional context available."
-        
-        mode_instructions = {
-            "Concise": "Provide a focused, direct answer covering the most important points. Keep it to exactly 1 paragraph. Be precise, clear, and comprehensive within that single paragraph, including key findings, interpretations, and actionable recommendations.",
-            "Detailed": "Provide a comprehensive analysis with detailed explanations, interpretations, and recommendations. Include specific data points, reference ranges, and clinical insights. CRITICAL: You MUST structure your response in exactly 3 separate paragraphs. Use TWO line breaks (\\n\\n) to separate each paragraph. Write: [Paragraph 1 content]\\n\\n[Paragraph 2 content]\\n\\n[Paragraph 3 content]. Paragraph 1: Key findings and data analysis with specific values. Paragraph 2: Clinical interpretation and significance of findings. Paragraph 3: Recommendations and next steps for each patient."
-        }
-        
-        return f"""You are an intelligent AI assistant. {mode_instructions.get(response_mode, mode_instructions['Detailed'])}
-
-Context Information:
-{context_str}
-
-User Question: {prompt}
-
-Instructions:
-- Use the context information to provide accurate answers
-- If the context doesn't contain relevant information, use your general knowledge
-- Be helpful, accurate, and engaging
-- Cite sources when using specific information from the context
-
-Response:"""
 
 class LLMManager:
     """Manager class to handle multiple LLM providers"""
@@ -555,9 +481,6 @@ class LLMManager:
             
             # Groq
             providers['Groq'] = GroqLLM(self.config.get_api_key('groq'))
-            
-            # Google Gemini
-            providers['Google Gemini'] = GoogleGeminiLLM(self.config.get_api_key('google'))
             
         except Exception as e:
             logger.error(f"Error initializing LLM providers: {str(e)}")
