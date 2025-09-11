@@ -122,11 +122,26 @@ st.markdown("""
     .sidebar .sidebar-content {
         background: #ffffff;
         border-right: 1px solid #e8ecf0;
-        box-shadow: 2px 0 8px rgba(30,60,155,0.1);
+        box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+        color: rgb(30,60,155);
     }
     
     .sidebar .sidebar-content .block-container {
         padding: 1.5rem 1rem;
+        color: rgb(30,60,155);
+    }
+    
+    /* Sidebar text elements */
+    .sidebar h1, .sidebar h2, .sidebar h3, .sidebar h4, .sidebar h5, .sidebar h6 {
+        color: rgb(30,60,155);
+    }
+    
+    .sidebar p, .sidebar div, .sidebar span {
+        color: rgb(30,60,155);
+    }
+    
+    .sidebar .stSelectbox label, .sidebar .stTextInput label, .sidebar .stTextArea label {
+        color: rgb(30,60,155);
     }
     
     /* Medical Grade Cards */
@@ -195,7 +210,7 @@ st.markdown("""
     /* Professional Buttons */
     .stButton > button {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: blue;
+        color: white;
         border: none;
         border-radius: 8px;
         padding: 0.75rem 2rem;
@@ -268,11 +283,30 @@ st.markdown("""
         border: 2px solid #e2e8f0;
         border-radius: 8px;
         transition: all 0.3s ease;
+        color: rgb(30,60,155);
     }
     
     .stSelectbox > div > div:focus-within {
         border-color: #1e3c72;
         box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+    }
+    
+    /* Table selection and data elements */
+    .stDataFrame, .stTable {
+        color: rgb(30,60,155);
+    }
+    
+    .stDataFrame table, .stTable table {
+        color: rgb(30,60,155);
+    }
+    
+    .stDataFrame th, .stDataFrame td, .stTable th, .stTable td {
+        color: rgb(30,60,155);
+    }
+    
+    /* Selectbox and dropdown text */
+    .stSelectbox label, .stSelectbox .css-1wa3eu0, .stSelectbox .css-1pahdxg {
+        color: rgb(30,60,155);
     }
     
     .stTextInput > div > div > input {
@@ -606,7 +640,10 @@ class ImprovedChatbotApp:
             available_models = []
             if self.config.is_configured('Groq'):
                 available_models.append("Groq (Compound)")
-
+            if self.config.is_configured('Google'):
+                available_models.append("Gemini 2.5 Flash")
+            if self.config.is_configured('OpenAI'):
+                available_models.append("OpenAI GPT-4")
             
             if available_models:
                 selected_model = st.selectbox(
@@ -617,7 +654,8 @@ class ImprovedChatbotApp:
                 # Map display names to internal names
                 model_mapping = {
                     "Groq (Compound)": ("Groq", "groq/compound"),
-
+                    "Gemini 2.5 Flash": ("Google Gemini", "gemini-2.5-flash"),
+                    "OpenAI GPT-4": ("OpenAI", "gpt-4")
                 }
                 st.session_state.selected_provider, st.session_state.selected_model = model_mapping[selected_model]
             else:
@@ -801,16 +839,16 @@ class ImprovedChatbotApp:
                             <p>Error processing {file.name}: {str(e)}</p>
                         </div>
                         """, unsafe_allow_html=True)
-                    
-                    # Update progress
-                    if len(uploaded_files) > 0:
-                        progress_value = i / len(uploaded_files)
-                        # Ensure progress value is between 0 and 1
-                        progress_value = max(0.0, min(1.0, progress_value))
-                        logger.info(f"Progress update: {i}/{len(uploaded_files)} = {progress_value}")
-                        progress_bar.progress(progress_value)
-                    else:
-                        progress_bar.progress(1.0)
+                
+                # Update progress
+                if len(uploaded_files) > 0:
+                    progress_value = i / len(uploaded_files)
+                    # Ensure progress value is between 0 and 1
+                    progress_value = max(0.0, min(1.0, progress_value))
+                    logger.info(f"Progress update: {i}/{len(uploaded_files)} = {progress_value}")
+                    progress_bar.progress(progress_value)
+                else:
+                    progress_bar.progress(1.0)
                 
                 st.session_state.documents_loaded = True
                 
