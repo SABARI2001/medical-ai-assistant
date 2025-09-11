@@ -15,8 +15,25 @@ class SupabaseDatabaseManager(DatabaseManager):
     """Supabase-specific database manager"""
     
     def __init__(self):
-        # Supabase connection details
-        self.connection_string = "postgresql://postgres:1234@db.nxnteidyxmznwfdupoav.supabase.co:5432/postgres"
+        # Load environment variables
+        from dotenv import load_dotenv
+        load_dotenv()
+        
+        # Get Supabase connection details from environment variables
+        database_url = os.getenv('DATABASE_URL')
+        if database_url and 'supabase.co' in database_url:
+            # Use DATABASE_URL if it's a Supabase URL
+            self.connection_string = database_url
+        else:
+            # Fallback to individual environment variables
+            host = os.getenv('SUPABASE_HOST', 'db.nxnteidyxmznwfdupoav.supabase.co')
+            port = os.getenv('SUPABASE_PORT', '5432')
+            database = os.getenv('SUPABASE_DB', 'postgres')
+            user = os.getenv('SUPABASE_USER', 'postgres')
+            password = os.getenv('SUPABASE_PASSWORD', '1234')
+            
+            self.connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+        
         self.engine = None
         self.Session = None
         self.setup_database()
@@ -109,13 +126,30 @@ class SupabaseDatabaseManager(DatabaseManager):
     
     def get_connection_info(self):
         """Get connection information for debugging"""
+        # Parse connection string to extract info
+        if 'supabase.co' in self.connection_string:
+            host = 'db.nxnteidyxmznwfdupoav.supabase.co'
+            port = 5432
+            database = 'postgres'
+            user = 'postgres'
+        else:
+            # Parse from connection string
+            import re
+            match = re.match(r'postgresql://([^:]+):([^@]+)@([^:]+):(\d+)/(.+)', self.connection_string)
+            if match:
+                user, password, host, port, database = match.groups()
+                port = int(port)
+            else:
+                host = port = database = user = "unknown"
+        
         return {
-            "host": "db.nxnteidyxmznwfdupoav.supabase.co",
-            "port": 5432,
-            "database": "postgres",
-            "user": "postgres",
+            "host": host,
+            "port": port,
+            "database": database,
+            "user": user,
             "ssl": "required",
-            "status": "connected" if self.engine else "disconnected"
+            "status": "connected" if self.engine else "disconnected",
+            "connection_string": self.connection_string[:50] + "..." if len(self.connection_string) > 50 else self.connection_string
         }
 
 def get_supabase_manager():
