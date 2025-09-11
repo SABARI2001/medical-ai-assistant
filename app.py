@@ -283,7 +283,7 @@ st.markdown("""
         border: 2px solid #e2e8f0;
         border-radius: 8px;
         transition: all 0.3s ease;
-        color: white;
+        color: rgb(30,60,155);
     }
     
     .stSelectbox > div > div:focus-within {
@@ -382,7 +382,7 @@ st.markdown("""
     
     .stTabs [aria-selected="true"] {
         background: #1e3c72;
-        color: rgb(30,60,155);
+        color: white;
         box-shadow: 0 4px 12px rgba(30, 60, 114, 0.2);
     }
     
