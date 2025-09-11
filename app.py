@@ -542,6 +542,10 @@ class ImprovedChatbotApp:
             st.session_state.selected_provider = "Groq"
         if 'selected_model' not in st.session_state:
             st.session_state.selected_model = "groq/compound"
+        if 'database_type' not in st.session_state:
+            st.session_state.database_type = "auto"  # auto, local, supabase
+        if 'database_connection_status' not in st.session_state:
+            st.session_state.database_connection_status = "unknown"
     
     def initialize_components(self):
         """Initialize core components"""
@@ -551,40 +555,49 @@ class ImprovedChatbotApp:
             
             self.llm_manager = LLMManager(self.config)
             
-            # Try to initialize database, but don't fail if it's not available
-            try:
-                from utils.error_handler import ErrorHandler, retry_on_failure
-                
-                @retry_on_failure(max_retries=2, delay=1.0)
-                def init_database():
-                    from models.cloud_database import get_database_manager
-                    return get_database_manager()
-                
-                self.db = init_database()
-                self.medical_rag = SimpleMedicalRAG(self.db)
-                self.comprehensive_rag = ComprehensiveRAG(self.db)
-                st.session_state.db_available = True
-                
-                # Load conversation history
+            # Initialize database based on selected type
+            self.db = None
+            self.medical_rag = None
+            self.comprehensive_rag = None
+            st.session_state.db_available = False
+            st.session_state.database_connection_status = "disconnected"
+            
+            if st.session_state.database_type != "none":
                 try:
-                    history = self.db.get_conversation_history(st.session_state.conversation_id)
-                    if history:
-                        st.session_state.messages = history
-                except Exception as history_error:
-                    ErrorHandler.log_error(history_error, "load_conversation_history")
-                    logger.warning(f"Could not load conversation history: {str(history_error)}")
+                    from utils.error_handler import ErrorHandler, retry_on_failure
                     
-            except Exception as db_error:
-                from utils.error_handler import ErrorHandler
-                error_id = ErrorHandler.log_error(db_error, "database_initialization", {
-                    'conversation_id': st.session_state.conversation_id
-                })
-                st.warning(f"Database not available (Error ID: {error_id}): {str(db_error)}")
-                st.info("Running in offline mode - data will not be persisted")
-                self.db = None
-                self.medical_rag = None
-                self.comprehensive_rag = None
-                st.session_state.db_available = False
+                    @retry_on_failure(max_retries=2, delay=1.0)
+                    def init_database():
+                        return self._get_database_manager()
+                    
+                    self.db = init_database()
+                    self.medical_rag = SimpleMedicalRAG(self.db)
+                    self.comprehensive_rag = ComprehensiveRAG(self.db)
+                    st.session_state.db_available = True
+                    st.session_state.database_connection_status = "connected"
+                    
+                    # Load conversation history
+                    try:
+                        history = self.db.get_conversation_history(st.session_state.conversation_id)
+                        if history:
+                            st.session_state.messages = history
+                    except Exception as history_error:
+                        ErrorHandler.log_error(history_error, "load_conversation_history")
+                        logger.warning(f"Could not load conversation history: {str(history_error)}")
+                        
+                except Exception as db_error:
+                    from utils.error_handler import ErrorHandler
+                    error_id = ErrorHandler.log_error(db_error, "database_initialization", {
+                        'conversation_id': st.session_state.conversation_id,
+                        'database_type': st.session_state.database_type
+                    })
+                    st.warning(f"Database not available (Error ID: {error_id}): {str(db_error)}")
+                    st.info("Running in offline mode - data will not be persisted")
+                    self.db = None
+                    self.medical_rag = None
+                    self.comprehensive_rag = None
+                    st.session_state.db_available = False
+                    st.session_state.database_connection_status = "error"
             
             self.medical_extractor = MedicalReportExtractor(self.llm_manager)
             
@@ -597,13 +610,50 @@ class ImprovedChatbotApp:
             st.error(f"Error initializing components: {str(e)}")
             st.stop()
     
+    def _get_database_manager(self):
+        """Get database manager based on selected type"""
+        if st.session_state.database_type == "local":
+            from models.database import DatabaseManager
+            return DatabaseManager()
+        elif st.session_state.database_type == "supabase":
+            from models.supabase_database import get_supabase_manager
+            return get_supabase_manager()
+        else:  # auto
+            from models.cloud_database import get_database_manager
+            return get_database_manager()
+    
     def render_sidebar(self):
         """Render the sidebar with controls"""
         with st.sidebar:
             st.markdown("")
             
+            # Database selection
+            st.markdown("### 🗄️ Database")
+            database_options = {
+                "Auto-detect": "auto",
+                "Local PostgreSQL": "local", 
+                "Supabase PostgreSQL": "supabase",
+                "No Database (Offline)": "none"
+            }
+            
+            selected_db_display = [k for k, v in database_options.items() if v == st.session_state.database_type][0]
+            new_db_display = st.selectbox(
+                "Choose database:",
+                list(database_options.keys()),
+                index=list(database_options.keys()).index(selected_db_display)
+            )
+            new_db_type = database_options[new_db_display]
+            
+            # Check if database type changed
+            if new_db_type != st.session_state.database_type:
+                st.session_state.database_type = new_db_type
+                st.rerun()  # Restart to reinitialize database
+            
+            # Database status indicator
+            self._render_database_status()
+            
             # Model selection
-            st.markdown("### AI Model")
+            st.markdown("### 🤖 AI Model")
             available_models = []
             if self.config.is_configured('Groq'):
                 available_models.append("Groq (Compound)")
@@ -628,7 +678,7 @@ class ImprovedChatbotApp:
                 st.session_state.selected_model = "groq/compound"
             
             # Response mode selector
-            st.markdown("### Response Mode")
+            st.markdown("### 📝 Response Mode")
             response_mode = st.selectbox(
                 "Choose response style:",
                 ["Concise", "Detailed", "Technical"],
@@ -647,7 +697,73 @@ class ImprovedChatbotApp:
                    - **Concise**: Brief, to-the-point answers
                    - **Detailed**: Comprehensive explanations
                    - **Technical**: Medical terminology and detailed analysis
+                5. **Database Options**:
+                   - **Auto-detect**: Automatically chooses the best database
+                   - **Local PostgreSQL**: Use local database (development)
+                   - **Supabase PostgreSQL**: Use cloud database (production)
+                   - **No Database**: Run offline without persistence
                 """)
+    
+    def _render_database_status(self):
+        """Render database connection status in sidebar"""
+        status = st.session_state.database_connection_status
+        db_type = st.session_state.database_type
+        
+        if db_type == "none":
+            st.info("🔴 **Offline Mode** - No database selected")
+            return
+        
+        # Get database type display name
+        db_display_names = {
+            "auto": "Auto-detect",
+            "local": "Local PostgreSQL", 
+            "supabase": "Supabase PostgreSQL"
+        }
+        db_display = db_display_names.get(db_type, db_type)
+        
+        if status == "connected":
+            st.success(f"🟢 **Connected** - {db_display}")
+            
+            # Show additional database info if available
+            if self.db and hasattr(self.db, 'get_connection_info'):
+                try:
+                    info = self.db.get_connection_info()
+                    with st.expander("Database Info", expanded=False):
+                        st.json(info)
+                except:
+                    pass
+                    
+        elif status == "error":
+            st.error(f"🔴 **Error** - {db_display} connection failed")
+        elif status == "disconnected":
+            st.warning(f"🟡 **Disconnected** - {db_display}")
+        else:
+            st.info(f"⚪ **Unknown** - {db_display}")
+        
+        # Test connection button
+        if db_type != "none" and status != "connected":
+            if st.button("🔄 Test Connection", key="test_db_connection"):
+                with st.spinner("Testing database connection..."):
+                    try:
+                        test_db = self._get_database_manager()
+                        if hasattr(test_db, 'test_connection'):
+                            success = test_db.test_connection()
+                        else:
+                            # Fallback test
+                            with test_db.engine.connect() as conn:
+                                result = conn.execute("SELECT 1 as test")
+                                success = result.fetchone()[0] == 1
+                        
+                        if success:
+                            st.session_state.database_connection_status = "connected"
+                            st.success("✅ Connection successful!")
+                            st.rerun()
+                        else:
+                            st.session_state.database_connection_status = "error"
+                            st.error("❌ Connection failed!")
+                    except Exception as e:
+                        st.session_state.database_connection_status = "error"
+                        st.error(f"❌ Connection error: {str(e)}")
     
     def render_header(self):
         """Render the application header"""
