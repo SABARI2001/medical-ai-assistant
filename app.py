@@ -283,7 +283,7 @@ st.markdown("""
         border: 2px solid #e2e8f0;
         border-radius: 8px;
         transition: all 0.3s ease;
-        color: rgb(30,60,155);
+        color: white;
     }
     
     .stSelectbox > div > div:focus-within {
