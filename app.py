@@ -95,7 +95,7 @@ st.markdown("""
     /* Professional Header */
     .main-header {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
+        color: rgb(30,60,155);
         padding: 2rem 0;
         margin-bottom: 2rem;
         border-radius: 12px;
