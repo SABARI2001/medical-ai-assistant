@@ -70,15 +70,31 @@ def get_database_manager():
         from dotenv import load_dotenv
         load_dotenv()
         
-        # Check if Supabase is configured
-        database_url = os.getenv('DATABASE_URL')
-        if database_url and 'supabase.co' in database_url:
-            logger.info("Using Supabase database")
+        # Check if we're in a cloud environment (Streamlit Cloud, Heroku, etc.)
+        # In cloud environments, we should always use Supabase
+        is_cloud_env = (
+            os.getenv('STREAMLIT_SHARING_MODE') or  # Streamlit Cloud
+            os.getenv('DYNO') or  # Heroku
+            os.getenv('RAILWAY_ENVIRONMENT') or  # Railway
+            os.getenv('RENDER') or  # Render
+            os.getenv('VERCEL') or  # Vercel
+            os.getenv('DATABASE_URL')  # Any cloud platform with DATABASE_URL
+        )
+        
+        if is_cloud_env:
+            logger.info("Cloud environment detected, using Supabase database")
             from .supabase_database import get_supabase_manager
             return get_supabase_manager()
         else:
-            logger.info("Using cloud database configuration")
-            return CloudDatabaseManager()
+            # Local development - check for DATABASE_URL first
+            database_url = os.getenv('DATABASE_URL')
+            if database_url and 'supabase.co' in database_url:
+                logger.info("Using Supabase database (local with Supabase)")
+                from .supabase_database import get_supabase_manager
+                return get_supabase_manager()
+            else:
+                logger.info("Using local database configuration")
+                return CloudDatabaseManager()
     except Exception as e:
         logger.warning(f"Cloud database not available, falling back to local: {str(e)}")
         from .database import DatabaseManager
