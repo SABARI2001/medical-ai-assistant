@@ -210,7 +210,7 @@ st.markdown("""
     /* Professional Buttons */
     .stButton > button {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: rgb(30,60,155);
+        color: white;
         border: none;
         border-radius: 8px;
         padding: 0.75rem 2rem;
@@ -382,7 +382,7 @@ st.markdown("""
     
     .stTabs [aria-selected="true"] {
         background: #1e3c72;
-        color: white;
+        color: rgb(30,60,155);
         box-shadow: 0 4px 12px rgba(30, 60, 114, 0.2);
     }
     
