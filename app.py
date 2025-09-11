@@ -122,7 +122,7 @@ st.markdown("""
     .sidebar .sidebar-content {
         background: #ffffff;
         border-right: 1px solid #e8ecf0;
-        box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+        box-shadow: 2px 0 8px rgba(30,60,155,0.1);
     }
     
     .sidebar .sidebar-content .block-container {
