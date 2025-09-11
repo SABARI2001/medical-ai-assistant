@@ -14,7 +14,6 @@ class Config:
         # API Keys - Use environment variables or set them here
         self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
         self.GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
-        self.GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY', '')
         self.SERPER_API_KEY = os.getenv('SERPER_API_KEY', '')  # For web search
         self.BING_SEARCH_KEY = os.getenv('BING_SEARCH_KEY', '')  # Alternative web search
         
@@ -31,11 +30,6 @@ class Config:
                 'max_tokens': 4100,
                 'temperature': 1.0,
                 'compound_tools': ['browser_automation', 'web_search']
-            },
-            'Google Gemini': {
-                'models': ['gemini-pro', 'gemini-pro-vision'],
-                'max_tokens': 4000,
-                'temperature': 0.7
             }
         }
         
@@ -92,7 +86,6 @@ class Config:
         key_mapping = {
             'openai': self.OPENAI_API_KEY,
             'groq': self.GROQ_API_KEY,
-            'google': self.GOOGLE_API_KEY,
             'serper': self.SERPER_API_KEY,
             'bing': self.BING_SEARCH_KEY
         }
@@ -103,7 +96,6 @@ class Config:
         status = {
             'openai': bool(self.OPENAI_API_KEY),
             'groq': bool(self.GROQ_API_KEY),
-            'google': bool(self.GOOGLE_API_KEY),
             'web_search': bool(self.SERPER_API_KEY or self.BING_SEARCH_KEY),
         }
         return status
@@ -117,7 +109,6 @@ class Config:
         provider_map = {
             'Groq': 'groq',
             'OpenAI': 'openai',
-            'Google': 'google',
             'Serper': 'serper',
             'Bing': 'bing'
         }
@@ -131,8 +122,6 @@ class Config:
             providers.append('Groq')
         if self.is_configured('OpenAI'):
             providers.append('OpenAI')
-        if self.is_configured('Google'):
-            providers.append('Google')
         return providers
     
     def create_directories(self):
