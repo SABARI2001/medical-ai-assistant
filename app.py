@@ -606,10 +606,7 @@ class ImprovedChatbotApp:
             available_models = []
             if self.config.is_configured('Groq'):
                 available_models.append("Groq (Compound)")
-            if self.config.is_configured('Google'):
-                available_models.append("Gemini 2.5 Flash")
-            if self.config.is_configured('OpenAI'):
-                available_models.append("OpenAI GPT-4")
+
             
             if available_models:
                 selected_model = st.selectbox(
