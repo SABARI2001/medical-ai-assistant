@@ -122,7 +122,7 @@ st.markdown("""
     .sidebar .sidebar-content {
         background: #ffffff;
         border-right: 1px solid #e8ecf0;
-        box-shadow: 2px 0 8px rgba(30, 60, 114, 0.15);
+        box-shadow: 2px 0 8px rgba(0,0,0,0.1);
     }
     
     .sidebar .sidebar-content .block-container {
@@ -195,7 +195,7 @@ st.markdown("""
     /* Professional Buttons */
     .stButton > button {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
+        color: blue;
         border: none;
         border-radius: 8px;
         padding: 0.75rem 2rem;
