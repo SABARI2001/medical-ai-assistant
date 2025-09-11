@@ -210,7 +210,7 @@ st.markdown("""
     /* Professional Buttons */
     .stButton > button {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
+        color: rgb(30,60,155);
         border: none;
         border-radius: 8px;
         padding: 0.75rem 2rem;
