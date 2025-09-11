@@ -67,7 +67,7 @@ st.markdown("""
         max-width: 1200px;
         padding: 1rem 1.5rem;
         margin: 0 auto;
-        background: #0c0c0d;
+        background: #fafbfc;
         min-height: 100vh;
         overflow-y: visible !important;
         height: auto !important;
@@ -122,7 +122,7 @@ st.markdown("""
     .sidebar .sidebar-content {
         background: #ffffff;
         border-right: 1px solid #e8ecf0;
-        box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+        box-shadow: 2px 0 8px rgba(30, 60, 114, 0.15);
     }
     
     .sidebar .sidebar-content .block-container {
