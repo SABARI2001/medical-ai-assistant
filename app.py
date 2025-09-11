@@ -607,8 +607,6 @@ class ImprovedChatbotApp:
             available_models = []
             if self.config.is_configured('Groq'):
                 available_models.append("Groq (Compound)")
-            if self.config.is_configured('Google'):
-                available_models.append("Gemini 2.5 Flash")
             if self.config.is_configured('OpenAI'):
                 available_models.append("OpenAI GPT-4")
             
@@ -621,7 +619,6 @@ class ImprovedChatbotApp:
                 # Map display names to internal names
                 model_mapping = {
                     "Groq (Compound)": ("Groq", "groq/compound"),
-                    "Gemini 2.5 Flash": ("Google Gemini", "gemini-2.5-flash"),
                     "OpenAI GPT-4": ("OpenAI", "gpt-4")
                 }
                 st.session_state.selected_provider, st.session_state.selected_model = model_mapping[selected_model]
