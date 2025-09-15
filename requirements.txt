@@ -1,28 +1,28 @@
-# Core Streamlit and Web Framework
+# Medical AI Assistant - Complete Dependencies
+# All packages required for the Medical AI Assistant project
+
+# Core Web Framework
 streamlit
 streamlit-chat
 
 # LLM Providers
 openai
 groq
-google-generativeai
 
-# Embeddings and Vector Search
-sentence-transformers
-faiss-cpu
-numpy
-torch
+# Database
+psycopg2-binary
+SQLAlchemy
 
 # Document Processing
 PyPDF2
-docx2txt
 python-docx
-markdown
 
-# Web Search and HTTP
-requests
-urllib3
-httpx
+# Machine Learning & AI
+sentence-transformers
+faiss-cpu
+scikit-learn
+torch
+transformers
 
 # Data Processing
 pandas
@@ -32,45 +32,28 @@ numpy
 regex
 nltk
 
-# Database
-psycopg2-binary
-SQLAlchemy
+# Web & HTTP
+requests
+urllib3
+httpx
 
 # Utilities
 python-dotenv
 pydantic
+typing-extensions
 
-# Caching and Storage
+# Caching & Storage
 joblib
 
-# Logging and Error Handling
+# Logging
 loguru
 
-# Additional Dependencies for Medical AI Assistant
-scikit-learn
-transformers
-tokenizers
-
-# Streamlit Cloud specific
-streamlit-option-menu
-streamlit-extras
-
-# Security and Environment
-cryptography
-
-python-magic
-
-# Date and time utilities
-python-dateutil
-
-# JSON handling
-jsonschema
-
-# HTTP client improvements
-aiohttp
-
-# Memory optimization
-psutil
+# Development & Testing
+pytest
+pytest-cov
 
 # Deployment
 gunicorn
+
+# Additional Dependencies
+markdown
