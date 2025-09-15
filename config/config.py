@@ -152,7 +152,7 @@ ENV_TEMPLATE = """
 # Add your actual API keys
 
 OPENAI_API_KEY=your_openai_api_key_here
-GROQ_API_KEY=your_groq_api_key_here
+GROQ_API_KEY=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
 GOOGLE_API_KEY=your_google_api_key_here
 SERPER_API_KEY=your_serper_api_key_here
 BING_SEARCH_KEY=your_bing_search_key_here
