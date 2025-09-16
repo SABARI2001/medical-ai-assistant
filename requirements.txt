@@ -1,0 +1,76 @@
+# Core Streamlit and Web Framework
+streamlit
+streamlit-chat
+
+# LLM Providers
+openai
+groq
+google-generativeai
+
+# Embeddings and Vector Search
+sentence-transformers
+faiss-cpu
+numpy
+torch
+
+# Document Processing
+PyPDF2
+docx2txt
+python-docx
+markdown
+
+# Web Search and HTTP
+requests
+urllib3
+httpx
+
+# Data Processing
+pandas
+numpy
+
+# Text Processing
+regex
+nltk
+
+# Database
+psycopg2-binary
+SQLAlchemy
+
+# Utilities
+python-dotenv
+pydantic
+
+# Caching and Storage
+joblib
+
+# Logging and Error Handling
+loguru
+
+# Additional Dependencies for Medical AI Assistant
+scikit-learn
+transformers
+tokenizers
+
+# Streamlit Cloud specific
+streamlit-option-menu
+streamlit-extras
+
+# Security and Environment
+cryptography
+
+python-magic
+
+# Date and time utilities
+python-dateutil
+
+# JSON handling
+jsonschema
+
+# HTTP client improvements
+aiohttp
+
+# Memory optimization
+psutil
+
+# Deployment
+gunicorn
